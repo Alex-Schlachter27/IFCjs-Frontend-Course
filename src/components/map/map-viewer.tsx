@@ -1,16 +1,33 @@
-import { FC, useRef, useEffect } from "react";
+import { FC, useRef, useEffect, useState } from "react";
 import { LogOutButton } from "../user/logout-button";
 import { Navigate } from "react-router-dom";
 import { useAppContext } from "../../middleware/context-provider";
+import { Button } from "@mui/material";
+import "./map-viewer.css";
 
 export const MapViewer: FC = () => {
   const [state, dispatch] = useAppContext();
-  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const thumbnailRef = useRef(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const { user, building } = state;
+
+  const onToggleCreate = () => {
+    setIsCreating(!isCreating);
+  };
+
+  const onCreate = () => {
+    if (isCreating) {
+      dispatch({ type: "ADD_BUILDING", payload: user });
+      setIsCreating(false);
+    }
+  };
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas && state.user) {
-      dispatch({ type: "START_MAP", payload: canvas });
+    const container = containerRef.current;
+    if (container && user) {
+      const thumbnail = thumbnailRef.current;
+      dispatch({ type: "START_MAP", payload: { container, user, thumbnail } });
     }
 
     return () => {
@@ -18,14 +35,32 @@ export const MapViewer: FC = () => {
     };
   }, []);
 
-  if (!state.user) {
+  if (!user) {
     return <Navigate to="/login" />;
+  }
+
+  if (building) {
+    const url = `/building/?id=${building}`;
+    return <Navigate to={url} />;
   }
 
   return (
     <>
-      <div className="full-screen" ref={canvasRef} />
-      <LogOutButton />
+      <div
+        className="full-screen"
+        onContextMenu={onCreate}
+        ref={containerRef}
+      />
+      {isCreating && (
+        <div className="overlay">
+          <p>Right click to create a new building or</p>
+          <Button onClick={onToggleCreate}>cancel</Button>
+        </div>
+      )}
+      <div className="top-navbar">
+        <Button onClick={onToggleCreate} variant="contained">Create building</Button>
+        <LogOutButton />
+      </div>
     </>
   );
 };
