@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import { Typography } from "@mui/material";
-import { getAppBar } from "./mui-utils";
+import { getAppBar } from "../mui-utils";
 
 export const BuildingTopbar: FC<{
   open: boolean;

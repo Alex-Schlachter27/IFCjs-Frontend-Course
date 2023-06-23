@@ -2,8 +2,10 @@ import { FC, useRef, useEffect, useState } from "react";
 import { LogOutButton } from "../user/logout-button";
 import { Navigate } from "react-router-dom";
 import { useAppContext } from "../../middleware/context-provider";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import "./map-viewer.css";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Tooltip from '@mui/material/Tooltip';
 
 export const MapViewer: FC = () => {
   const [state, dispatch] = useAppContext();
@@ -29,10 +31,6 @@ export const MapViewer: FC = () => {
       const thumbnail = thumbnailRef.current;
       dispatch({ type: "START_MAP", payload: { container, user, thumbnail } });
     }
-
-    return () => {
-      dispatch({ type: "REMOVE_MAP" });
-    };
   }, []);
 
   if (!user) {
@@ -57,8 +55,13 @@ export const MapViewer: FC = () => {
           <Button onClick={onToggleCreate}>cancel</Button>
         </div>
       )}
-      <div className="top-navbar">
-        <Button onClick={onToggleCreate} variant="contained">Create building</Button>
+      <div className="button-row">
+        <Tooltip title="Create new building">
+          {/* , background: "lightgreen"  */}
+          <Button onClick={onToggleCreate} variant="contained" aria-label="Create new building" sx={ { borderRadius: 28} }>
+            <AddCircleOutlineIcon />
+          </Button >
+        </Tooltip>
         <LogOutButton />
       </div>
     </>

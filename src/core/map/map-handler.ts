@@ -8,6 +8,7 @@ export const mapHandler = {
   async start(container: HTMLDivElement, user: User, events: Events) {
     if (!this.viewer) {
       this.viewer = new MapScene(container, events);
+      console.log("Map started")
       await this.viewer.getAllBuildings(user);
     }
   },
@@ -16,6 +17,7 @@ export const mapHandler = {
     if (this.viewer) {
       this.viewer.dispose();
       this.viewer = null;
+      console.log("Map removed")
     }
   },
 

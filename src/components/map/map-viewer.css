@@ -1,8 +1,11 @@
-.top-navbar {
+.button-row {
   position: fixed;
-  top: 5px;
-  /* background-color: white; */
-  width: 100vw;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 5px;
 }
 
 .overlay {
