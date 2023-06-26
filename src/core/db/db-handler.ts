@@ -13,8 +13,9 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { Events } from "../../middleware/event-handler";
-import { Building, Model } from "../map/types";
+import { Building, Model } from "../types";
 import { getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
+import { buildingHandler } from "../building/building-handler";
 
 export const databaseHandler = {
   login: () => {
@@ -30,8 +31,17 @@ export const databaseHandler = {
 
   deleteBuilding: async (building: Building, events: Events) => {
     const id = building.uid;
-    const dbInstance = getFirestore(getApp());
+    const appInstance = getApp();
+    const dbInstance = getFirestore(appInstance);
     await deleteDoc(doc(dbInstance, "buildings", id));
+    const storageInstance = getStorage(appInstance);
+    const ids: string[] = [];
+    for (const model of building.models) {
+      ids.push(model.id);
+      const fileRef = ref(storageInstance, model.id);
+      await deleteObject(fileRef);
+    }
+    await buildingHandler.deleteModels(ids);
     events.trigger({ type: "CLOSE_BUILDING" });
   },
 
@@ -60,6 +70,7 @@ export const databaseHandler = {
     const storageInstance = getStorage(appInstance);
     const fileRef = ref(storageInstance, model.id);
     await deleteObject(fileRef);
+    await buildingHandler.deleteModels([model.id]);
     events.trigger({ type: "UPDATE_BUILDING", payload: building });
   },
 };
