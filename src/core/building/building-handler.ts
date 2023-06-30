@@ -1,4 +1,4 @@
-import { Building } from "../types";
+import { Building } from "../../types";
 import { BuildingScene } from "./building-scene";
 
 export const buildingHandler = {
@@ -33,9 +33,35 @@ export const buildingHandler = {
   async refreshModels(building: Building) {
     if (this.viewer) {
       const container = this.viewer.container;
+
+      // Reinitiating the whole viewer
       this.viewer.dispose();
       this.viewer = null;
       this.viewer = new BuildingScene(container, building);
     }
   },
+  
+  explode(active: boolean) {
+    if (this.viewer) {
+      this.viewer.explode(active);
+    }
+  },
+
+  toggleClippingPlanes(active: boolean) {
+    if (this.viewer) {
+      this.viewer.toggleClippingPlanes(active);
+    }
+  },
+
+  toggleDimensions(active: boolean) {
+    if (this.viewer) {
+      this.viewer.toggleDimensions(active);
+    }
+  },
+
+  // toggleFloorplan(active: boolean, floorplan?: Floorplan) {
+  //   if (this.viewer) {
+  //     this.viewer.toggleFloorplan(active, floorplan);
+  //   }
+  // },
 };

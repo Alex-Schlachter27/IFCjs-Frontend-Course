@@ -26,3 +26,22 @@ export interface Model {
   name: string;
   id: string;
 }
+
+export interface Tool {
+  name: string;
+  tooltip?: string;
+  active: boolean;
+  icon: any;
+  action: (...args: any) => void;
+}
+
+export interface Floorplan {
+  name: string;
+  id: string;
+}
+
+export interface Property {
+  name: string;
+  value: string;
+}
+

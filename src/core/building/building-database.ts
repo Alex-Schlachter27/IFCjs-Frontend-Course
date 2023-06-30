@@ -6,7 +6,7 @@ import {
   getStorage,
   ref,
 } from "firebase/storage";
-import { Building } from "../types";
+import { Building } from "../../types";
 
 // CORS problem solution: https://stackoverflow.com/a/58613527
 export class BuildingDatabase {

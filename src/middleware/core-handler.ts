@@ -44,5 +44,18 @@ export const executeCore = async (action: Action, events: Events) => {
   if (action.type === "DELETE_MODEL") {
     const { model, building } = action.payload;
     return databaseHandler.deleteModel(model, building, events);
+  }  
+  if (action.type === "EXPLODE_MODEL") {
+    return buildingHandler.explode(action.payload);
   }
+  if (action.type === "TOGGLE_CLIPPER") {
+    return buildingHandler.toggleClippingPlanes(action.payload);
+  }
+  if (action.type === "TOGGLE_DIMENSIONS") {
+    return buildingHandler.toggleDimensions(action.payload);
+  }
+  // if (action.type === "TOGGLE_FLOORPLAN") {
+  //   const { active, floorplan } = action.payload;
+  //   return buildingHandler.toggleFloorplan(active, floorplan);
+  // }
 };

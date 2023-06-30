@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { Building } from "../core/types";
+import { Building } from "../types";
 
 export interface State {
   user: User | null;
