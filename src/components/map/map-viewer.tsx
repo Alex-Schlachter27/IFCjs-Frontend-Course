@@ -1,5 +1,5 @@
 import { FC, useRef, useEffect, useState } from "react";
-import { LogOutButton } from "../user/logout-button";
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Navigate } from "react-router-dom";
 import { useAppContext } from "../../middleware/context-provider";
 import { Button, IconButton } from "@mui/material";
@@ -16,6 +16,10 @@ export const MapViewer: FC = () => {
 
   const onToggleCreate = () => {
     setIsCreating(!isCreating);
+  };
+
+  const onLogoutClick = () => {
+    dispatch({ type: "LOGOUT" });
   };
 
   const onCreate = () => {
@@ -62,7 +66,9 @@ export const MapViewer: FC = () => {
             <AddCircleOutlineIcon />
           </Button >
         </Tooltip>
-        <LogOutButton />
+        <Button onClick={onLogoutClick} variant="contained" sx={ { borderRadius: 28 } }>
+          <LogoutIcon />
+        </Button>
       </div>
     </>
   );

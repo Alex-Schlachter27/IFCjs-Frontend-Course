@@ -20,7 +20,7 @@
     "dexie": "^3.2.4",
     "firebase": "^9.20.0",
     "mapbox-gl": "^2.15.0",
-    "openbim-components": "^0.0.39",
+    "openbim-components": "^0.0.51",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",

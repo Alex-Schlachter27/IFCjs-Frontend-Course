@@ -1,12 +1,13 @@
-import { Building } from "../../types";
+import { Events } from "../../middleware/event-handler";
+import { Building, Floorplan } from "../../types";
 import { BuildingScene } from "./building-scene";
 
 export const buildingHandler = {
   viewer: null as BuildingScene | null,
 
-  async start(container: HTMLDivElement, building: Building) {
+  async start(container: HTMLDivElement, building: Building, events: Events) {
     if (!this.viewer) {
-      this.viewer = new BuildingScene(container, building);
+      this.viewer = new BuildingScene(container, building, events);
     }
   },
 
@@ -30,14 +31,14 @@ export const buildingHandler = {
     }
   },
 
-  async refreshModels(building: Building) {
+  async refreshModels(building: Building, events: Events) {
     if (this.viewer) {
       const container = this.viewer.container;
 
       // Reinitiating the whole viewer
       this.viewer.dispose();
       this.viewer = null;
-      this.viewer = new BuildingScene(container, building);
+      this.viewer = new BuildingScene(container, building, events);
     }
   },
   
@@ -59,9 +60,9 @@ export const buildingHandler = {
     }
   },
 
-  // toggleFloorplan(active: boolean, floorplan?: Floorplan) {
-  //   if (this.viewer) {
-  //     this.viewer.toggleFloorplan(active, floorplan);
-  //   }
-  // },
+  toggleFloorplan(active: boolean, floorplan?: Floorplan) {
+    if (this.viewer) {
+      this.viewer.toggleFloorplan(active, floorplan);
+    }
+  },
 };

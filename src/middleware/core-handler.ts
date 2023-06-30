@@ -31,7 +31,7 @@ export const executeCore = async (action: Action, events: Events) => {
   }
   if (action.type === "START_BUILDING") {
     const { container, building } = action.payload;
-    return buildingHandler.start(container, building);
+    return buildingHandler.start(container, building, events);
   }
   if (action.type === "CLOSE_BUILDING") {
     return buildingHandler.remove();
@@ -54,8 +54,8 @@ export const executeCore = async (action: Action, events: Events) => {
   if (action.type === "TOGGLE_DIMENSIONS") {
     return buildingHandler.toggleDimensions(action.payload);
   }
-  // if (action.type === "TOGGLE_FLOORPLAN") {
-  //   const { active, floorplan } = action.payload;
-  //   return buildingHandler.toggleFloorplan(active, floorplan);
-  // }
+  if (action.type === "TOGGLE_FLOORPLAN") {
+    const { active, floorplan } = action.payload;
+    return buildingHandler.toggleFloorplan(active, floorplan);
+  }
 };
