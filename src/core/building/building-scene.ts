@@ -7,6 +7,8 @@ import { unzip } from "unzipit";
 import { Floorplan, Property } from "./../../types";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial";
 import { Events } from "../../middleware/event-handler";
+import { propertiesService } from "./property-service";
+
 
 export class BuildingScene {
   database = new BuildingDatabase();
@@ -19,6 +21,7 @@ export class BuildingScene {
   private loadedModels = new Set<string>();
   private whiteMaterial = new THREE.MeshBasicMaterial({ color: "white" });
   private properties: { [fragID: string]: any } = {};
+  private _props = propertiesService;
 
   private sceneEvents: { name: any; action: any }[] = [];  
   private events: Events;
@@ -29,7 +32,11 @@ export class BuildingScene {
     return domElement.parentElement as HTMLDivElement;
   }
 
-  constructor(container: HTMLDivElement, building: Building, events: Events) {
+  constructor(
+      container: HTMLDivElement, 
+      building: Building, 
+      events: Events,
+  ){
     this.events = events;
     this.components = new OBC.Components();
 
@@ -149,12 +156,27 @@ export class BuildingScene {
     const result = this.fragments.highlighter.highlight("selection");
     console.log(result)
     if (result) {
-      const allProps = this.properties[result.fragment.id];
-      const props = allProps[result.id];
-      if (props) {
+      // TODO
+      // Disable selection when turning camera OR 
+      // only get properties when checking properties, not with every select (selecting and clicking on menu "Properties")
+      //
+
+      // console.log(this.properties[result.fragment.id])
+      // const { allSingleValueProps, allPsets, allQsets, allPsetsRels, otherProperties } = this.properties[result.fragment.id];
+      const properties = this.properties[result.fragment.id];
+      
+      // Object Props
+      const objectProps = properties[result.id];
+      console.log(objectProps)
+
+      // PsetProps
+      const pSetProps = this._props.getAllElementProperties(result.id, properties);
+      console.log(pSetProps)
+
+      if (objectProps) {
         const formatted: Property[] = [];
-        for (const name in props) {
-          let value = props[name];
+        for (const name in objectProps) {
+          let value = objectProps[name];
           if (!value) value = "Unknown";
           if (value.value) value = value.value;
           if (typeof value === "number") value = value.toString();
@@ -355,9 +377,7 @@ export class BuildingScene {
       const allTypes = await entries["all-types.json"].json();
       const modelTypes = await entries["model-types.json"].json();
       const levelsProperties = await entries["levels-properties.json"].json();
-      const levelsRelationship = await entries[
-        "levels-relationship.json"
-      ].json();
+      const levelsRelationship = await entries["levels-relationship.json"].json();
 
       // Set up floorplans
 
@@ -406,7 +426,13 @@ export class BuildingScene {
 
         const fragment = await this.fragments.load(geometryURL, dataURL);
 
+        // TAKES TOO LONG!
+        // const psetPropertyList = this._props.getElementProperties(properties);
+        // const newProps = this._props.getFramentProperties(properties, psetPropertyList, fragment);
+        // console.log(newProps)
         this.properties[fragment.id] = properties;
+        // console.log(fragment.id, Object.keys(properties).length) //--> Always all properties are appended to each fragment property list (to relate it to one model) --> Can be improved!
+        // this.properties[fragment.id] = this._props.groupPropertiesByType(properties); //--> Takes way too long!
 
         // Set up edges
         const lines = this.fragments.edges.generate(fragment);
