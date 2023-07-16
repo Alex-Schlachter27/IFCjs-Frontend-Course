@@ -1,4 +1,4 @@
-import { Floorplan, Property } from "./../types";
+import { Floorplan, Property, PropertySet } from "./../types";
 import { User } from "firebase/auth";
 import { Building } from "../types";
 
@@ -6,7 +6,7 @@ export interface State {
   user: User | null;
   building: Building | null;
   floorplans: Floorplan[];
-  properties: Property[];
+  properties: PropertySet[];
 }
 
 export const initialState: State = {

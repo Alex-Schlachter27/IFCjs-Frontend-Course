@@ -45,3 +45,8 @@ export interface Property {
   value: string;
 }
 
+export interface PropertySet {
+  name: string;
+  properties: Property[];
+}
+

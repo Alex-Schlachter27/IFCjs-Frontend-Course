@@ -2,7 +2,7 @@ import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { downloadZip } from "client-zip";
 import { BuildingDatabase } from "./building-database";
-import { Building } from "../../types";
+import { Building, PropertySet } from "../../types";
 import { unzip } from "unzipit";
 import { Floorplan, Property } from "./../../types";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial";
@@ -154,7 +154,7 @@ export class BuildingScene {
 
   private select = () => {
     const result = this.fragments.highlighter.highlight("selection");
-    console.log(result)
+    // console.log(result)
     if (result) {
       // TODO
       // Disable selection when turning camera OR 
@@ -174,6 +174,7 @@ export class BuildingScene {
       console.log(pSetProps)
 
       if (objectProps) {
+        let displayProps: PropertySet[] = [];
         const formatted: Property[] = [];
         for (const name in objectProps) {
           let value = objectProps[name];
@@ -182,9 +183,29 @@ export class BuildingScene {
           if (typeof value === "number") value = value.toString();
           formatted.push({ name, value });
         }
+        // console.log(formatted)
+        displayProps.push({name: "Object_Properties", properties: formatted})
+
+        if (pSetProps) {
+          // Loop over object of property sets
+          for (const pSetName in pSetProps) {
+            let formattedPsetProps: Property[] = [];
+            let pSet = pSetProps[pSetName];
+            // console.log(pSetName)
+            for (const prop of pSet) {
+              // console.log(prop)
+              const name = prop.Name.value ? prop.Name.value : "Unknown";
+              let value = prop.NominalValue.value ? prop.NominalValue.value : "Unknown";
+              if (typeof value === "number") value = value.toString();
+              formattedPsetProps.push({ name, value })
+            }
+            displayProps.push({name: pSetName, properties: formattedPsetProps})
+          }
+        }
+
         return this.events.trigger({
           type: "UPDATE_PROPERTIES",
-          payload: formatted,
+          payload: displayProps,
         });
       }
     }

@@ -30,19 +30,26 @@ export const BuildingFrontMenu: FC<{
     Floorplans: "Floorplans",
   };
 
+  const handleClick = (e: any) => {
+    // Prevent the click event from propagating to the three.js scene
+    e.stopPropagation();
+  };
+
   const title = titles[mode];
 
   return (
-    <Card className="front-menu">
-      <CardContent>
-        <div className="front-menu-header">
-          <h2>{title}</h2>
-          <IconButton onClick={() => onToggleMenu(false)}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <div className="front-menu-content">{content.get(mode)}</div>
-      </CardContent>
-    </Card>
+    // <div className="popup-wrapper" onClick={handleClick}>
+      <Card className="front-menu" onClick={handleClick}>
+        <CardContent>
+          <div className="front-menu-header">
+            <h2>{title}</h2>
+            <IconButton onClick={() => onToggleMenu(false)}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <div className="front-menu-content">{content.get(mode)}</div>
+        </CardContent>
+      </Card>
+    // </div>
   );
 };
