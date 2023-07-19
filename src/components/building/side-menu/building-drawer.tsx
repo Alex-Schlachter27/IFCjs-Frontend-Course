@@ -21,8 +21,13 @@ export const BuildingDrawer: FC<{
   const Drawer = getDrawer(drawerWidth);
   const DrawerHeader = getDrawerHeader();
 
+  const handleClick = (e: any) => {
+    // Prevent the click event from propagating to the three.js scene
+    e.stopPropagation();
+  };
+
   return (
-    <Drawer variant="permanent" open={open}>
+    <Drawer variant="permanent" open={open} onClick={handleClick}>
       <DrawerHeader>
         <IconButton onClick={onClose}>
           {theme.direction === "rtl" ? (

@@ -195,8 +195,12 @@ export class BuildingScene {
             for (const prop of pSet) {
               // console.log(prop)
               const name = prop.Name.value ? prop.Name.value : "Unknown";
-              let value = prop.NominalValue.value ? prop.NominalValue.value : "Unknown";
-              if (typeof value === "number") value = value.toString();
+              // console.log(prop)
+              let value: any = "Unknown";
+              if (prop.NominalValue != null) {
+                value = prop.NominalValue.value ? prop.NominalValue.value : "Unknown";
+                if (typeof value === "number") value = value.toString();
+              }
               formattedPsetProps.push({ name, value })
             }
             displayProps.push({name: pSetName, properties: formattedPsetProps})

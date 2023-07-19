@@ -69,7 +69,7 @@ export const ModelListMenu: FC = () => {
           </div>
         ))
       ) : (
-        <p>This building has no models!</p>
+        <span>This building has no models!</span>
       )}
       <div className="list-item">
         <Button onClick={onUploadModel} className="submit-button">

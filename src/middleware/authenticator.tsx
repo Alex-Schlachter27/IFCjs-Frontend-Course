@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, FC } from "react";
-import { useAppContext } from "./context-provider";
+import { useAppContext, setUserLocalStorage } from "./context-provider";
 
 let authInitialized = false;
 
@@ -11,6 +11,7 @@ export const Authenticator: FC = () => {
   const listenToAuthChanges = () => {
     onAuthStateChanged(auth, (foundUser) => {
       const user = foundUser ? { ...foundUser } : null;
+      setUserLocalStorage(user)
       dispatch({ type: "UPDATE_USER", payload: user });
     });
   };

@@ -1,7 +1,7 @@
 import { FC, useRef, useEffect, useState } from "react";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Navigate } from "react-router-dom";
-import { useAppContext } from "../../middleware/context-provider";
+import { getLocalStorageUser, useAppContext } from "../../middleware/context-provider";
 import { Button, IconButton } from "@mui/material";
 import "./map-viewer.css";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -12,7 +12,7 @@ export const MapViewer: FC = () => {
   const containerRef = useRef(null);
   const thumbnailRef = useRef(null);
   const [isCreating, setIsCreating] = useState(false);
-  const { user, building } = state;
+  let { user, building } = state;
 
   const onToggleCreate = () => {
     setIsCreating(!isCreating);
@@ -37,12 +37,24 @@ export const MapViewer: FC = () => {
     }
   }, []);
 
+  // if (!user) {
+  //   return <Navigate to="/login" />;
+  // }
+
   if (!user) {
-    return <Navigate to="/login" />;
+    console.log("no user", user)
+    // try to get user from local storage 
+    user = getLocalStorageUser();
+    console.log(user)
+    if(!user) {
+      console.log("still no user, navigating to login", user)
+      return <Navigate to="/login" />
+    };
   }
 
   if (building) {
     const url = `/building/?id=${building.uid}`;
+    console.log(url)
     return <Navigate to={url} />;
   }
 
@@ -55,7 +67,7 @@ export const MapViewer: FC = () => {
       />
       {isCreating && (
         <div className="overlay">
-          <p>Right click to create a new building or</p>
+          <span>Right click to create a new building or</span>
           <Button onClick={onToggleCreate}>cancel</Button>
         </div>
       )}

@@ -3,7 +3,6 @@ import * as OBC from "openbim-components";
 import * as MAPBOX from "mapbox-gl";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { GisParameters, Building, LngLat } from "../../types";
-import { MAPBOX_KEY } from "../../config";
 import { User } from "firebase/auth";
 import { MapDatabase } from "./map-database";
 import { Events } from "../../middleware/event-handler";
@@ -85,6 +84,8 @@ export class MapScene {
     div.textContent = "🏠";
     div.onclick = () => {
       this.events.trigger({ type: "OPEN_BUILDING", payload: building });
+      console.log("writing building to local storage", building)
+      localStorage.setItem( "building", JSON.stringify(building) )
     };
     div.classList.add("thumbnail");
     return div;
@@ -136,9 +137,11 @@ export class MapScene {
     // const center = [7.730277288470006, 63.110047455818375] as [number, number];
     const center = [12.5629251458645, 55.660652119815445] as [number, number]; // CPH
     this.center = { lng: center[0], lat: center[1] };
+    
+    let accessToken: string | undefined = process.env.REACT_APP_MAPBOX_KEY as string;
     return {
       container,
-      accessToken: MAPBOX_KEY,
+      accessToken,
       zoom: 15.35,
       pitch: 60,
       bearing: -40,

@@ -33,7 +33,7 @@ export const PropertiesMenu: FC = () => {
       <div>
         {propertyList.map((pSet) => (
 
-          <Accordion expanded={expanded === pSet.name} onChange={handleChange(pSet.name)}>
+          <Accordion  key={pSet.name} expanded={expanded === pSet.name} onChange={handleChange(pSet.name)}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls={`${pSet.name}-content`}
@@ -50,7 +50,7 @@ export const PropertiesMenu: FC = () => {
                 <div key={property.name}>
                   <div className="value-pair list-item">
                     <div>{property.name}</div>
-                    <p>:</p>
+                    <span>:</span>
                     <div>{property.value}</div>
                   </div>
                   <Divider />
@@ -66,7 +66,7 @@ export const PropertiesMenu: FC = () => {
     } else {
       return (
         <div>
-          <p>No item selected.</p>
+          <span>No item selected.</span>
         </div>
       );
     }

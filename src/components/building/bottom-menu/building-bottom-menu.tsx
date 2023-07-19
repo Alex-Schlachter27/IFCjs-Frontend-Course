@@ -14,7 +14,7 @@ export const BuildingBottomMenu: FC = () => {
     <Card className="bottom-menu">
       {tools.map((tool) => {
         return (
-          <Tooltip title={tool.tooltip}>
+          <Tooltip key={tool.name} title={tool.tooltip}>
             <IconButton
               color={tool.active ? "primary" : "default"}
               onClick={() => tool.action(dispatch)}
