@@ -18,7 +18,11 @@ export const BuildingViewer: FC = () => {
   const [frontMenuMode, setFrontMenuMode] = useState<FrontMenuMode>("BuildingInfo");
 
   let [{ building, user }, dispatch] = useAppContext();
+  const queryParameters = new URLSearchParams(window.location.search)
+  const buildingId = queryParameters.get("id")
+  console.log(buildingId)
 
+  // Get building from url! --> get from Firebase!
   useEffect(() => {
     if (!building) {
       console.log("no building", building)
@@ -28,7 +32,8 @@ export const BuildingViewer: FC = () => {
       // trigger on component mount
       dispatch({ type: "OPEN_BUILDING", payload: building });
     }
-  }, []);
+    //only gets executed when building changes
+  }, [building]);
 
   
   
