@@ -84,7 +84,7 @@ export class MapScene {
     div.textContent = "🏠";
     div.onclick = () => {
       this.events.trigger({ type: "OPEN_BUILDING", payload: building });
-      console.log("writing building to local storage", building)
+      // console.log("writing building to local storage", building)
       localStorage.setItem( "building", JSON.stringify(building) )
     };
     div.classList.add("thumbnail");

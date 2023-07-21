@@ -42,10 +42,10 @@ export const MapViewer: FC = () => {
   // }
 
   if (!user) {
-    console.log("no user", user)
+    // console.log("no user", user)
     // try to get user from local storage 
     user = getLocalStorageUser();
-    console.log(user)
+    // console.log(user)
     if(!user) {
       console.log("still no user, navigating to login", user)
       return <Navigate to="/login" />
@@ -54,7 +54,7 @@ export const MapViewer: FC = () => {
 
   if (building) {
     const url = `/building/?id=${building.uid}`;
-    console.log(url)
+    // console.log(url)
     return <Navigate to={url} />;
   }
 

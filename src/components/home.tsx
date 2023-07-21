@@ -5,7 +5,7 @@ import { LoginPage } from "./user/login-page";
 
 export const Dashboard: FC = () => {
   const [state] = useAppContext();
-  console.log(state)
+  console.log(state, "HEEEELOOOO")
 
   return state.user ? <Navigate to="/map" /> : <LoginPage />;
 };

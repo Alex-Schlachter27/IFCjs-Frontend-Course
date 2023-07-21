@@ -26,7 +26,7 @@ export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const dispatch = (value: Action) => {
     setState(value);
-    console.log(value)
+    // console.log(value)
     // localStorage.setItem( storageId, JSON.stringify(value) );
     executeCore(value, events);
   };
@@ -60,7 +60,7 @@ export const getLocalStorageUser = () => {
 };
 
 export const setUserLocalStorage = (user: User | null) => {
-  console.log("writing user to local storage", user)
+  // console.log("writing user to local storage", user)
   if(user != null) localStorage.setItem( "user", JSON.stringify(user) );
 };
 
@@ -74,7 +74,7 @@ export const getLocalStorageBuilding = () => {
 };
 
 export const setBuildingLocalStorage = (building: Building | null) => {
-  console.log("writing building to local storage", building)
+  // console.log("writing building to local storage", building)
   if(building != null) localStorage.setItem( "building", JSON.stringify(building) );
 };
 

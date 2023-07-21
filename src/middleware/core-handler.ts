@@ -29,6 +29,12 @@ export const executeCore = async (action: Action, events: Events) => {
   if (action.type === "UPDATE_BUILDING") {
     return databaseHandler.updateBuilding(action.payload);
   }
+  if (action.type === "GET_BUILDING") {
+    const buildingId = action.payload;
+    const building =  await databaseHandler.getBuilding(buildingId);
+    // console.log(building)
+    return building
+  }
   if (action.type === "START_BUILDING") {
     const { container, building } = action.payload;
     return buildingHandler.start(container, building, events);

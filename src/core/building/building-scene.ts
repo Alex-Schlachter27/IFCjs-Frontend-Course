@@ -9,6 +9,11 @@ import { LineMaterial } from "three/examples/jsm/lines/LineMaterial";
 import { Events } from "../../middleware/event-handler";
 import { propertiesService } from "./property-service";
 
+export interface HlSettings {
+  enabled: boolean;
+  translucent: boolean;
+  singleSelect: boolean;
+}
 
 export class BuildingScene {
   database = new BuildingDatabase();
@@ -17,6 +22,7 @@ export class BuildingScene {
   
   private components: OBC.Components;
   private fragments: OBC.Fragments;
+  private renderer: OBC.PostproductionRenderer;
 
   private loadedModels = new Set<string>();
   private whiteMaterial = new THREE.MeshBasicMaterial({ color: "white" });
@@ -25,6 +31,16 @@ export class BuildingScene {
 
   private sceneEvents: { name: any; action: any }[] = [];  
   private events: Events;
+
+  // CAMERA
+  private cameraIsRotating: boolean = false;
+
+  // HIGHLIGHT
+  private hlSettings: HlSettings= {
+    enabled: true,
+    translucent: false,
+    singleSelect: true,
+  };
 
   get container() {
     const domElement = this.components.renderer.get().domElement; // canvas of three.js
@@ -41,16 +57,37 @@ export class BuildingScene {
     this.components = new OBC.Components();
 
     this.components.scene = new OBC.SimpleScene(this.components);
-    this.components.renderer = new OBC.SimpleRenderer(
-      this.components,
-      container
-    );
+    // this.components.renderer = new OBC.SimpleRenderer(
+    //   this.components,
+    //   container
+    // );
 
     const scene = this.components.scene.get();
     scene.background = new THREE.Color();
 
+    // Renderer
+    this.renderer = new OBC.PostproductionRenderer(this.components, container);
+    this.components.renderer = this.renderer;
+    this.renderer.postproduction.outlineColor = 0x999999;
+
+    // CAMERA
     const camera = new OBC.OrthoPerspectiveCamera(this.components);
     this.components.camera = camera;
+    this.renderer.postproduction.setup(camera.controls);
+	  this.renderer.postproduction.active = true;
+
+    const cameraControls = camera.controls;
+    cameraControls.addEventListener('update', () => {
+      // console.log("CAMERA IS ROTATING")
+      this.cameraIsRotating = true;
+    });
+
+    cameraControls.addEventListener('sleep', () => {
+      // console.log("CAMERA IS SLEEPING")
+      this.cameraIsRotating = false;
+    });
+    
+
     this.components.raycaster = new OBC.SimpleRaycaster(this.components);
     this.components.init();
     
@@ -82,7 +119,7 @@ export class BuildingScene {
 
     const grid = new OBC.SimpleGrid(this.components);
     this.components.tools.add(grid);
-
+    this.renderer.postproduction.excludedItems.add(grid.get());
 
     this.fragments = new OBC.Fragments(this.components);
     this.fragments.highlighter.active = true;
@@ -95,8 +132,11 @@ export class BuildingScene {
       transparent: true,
     });
 
+    const redMaterial = new THREE.MeshBasicMaterial({ color: "red" });
+
     this.fragments.highlighter.add("selection", [selectMat]);
     this.fragments.highlighter.add("preselection", [preselectMat]);
+    this.fragments.highlighter.add("red", [redMaterial]);
 
     // If everything should be displayed at once
     // this.fragments.culler.enabled = false;
@@ -128,6 +168,12 @@ export class BuildingScene {
       { name: "keydown", action: this.createClippingPlane },
       { name: "keydown", action: this.createDimension },
       { name: "keydown", action: this.deleteClippingPlaneOrDimension },
+      { name: "keydown", action: this.getIntersection },
+      { name: "keydown", action: this.highlightAllWindows },
+      { name: "keydown", action: this.escapeAll },
+      // { name: "mouseup", action: this.cameraRotation },
+      // { name: "mousedown", action: this.cameraRotation },
+
     ];
     this.toggleEvents(true);
   }
@@ -143,19 +189,44 @@ export class BuildingScene {
     }
   }
 
+  private escapeAll = (event: KeyboardEvent) => {
+    if (event.code === "Escape") this.fragments.highlighter.clear()
+  }
+
+
   // Need to be arrow functions!
   private updateCulling = () => {
     this.fragments.culler.needsUpdate = true;
+    // Bind postproduction update with fragment culler update
+    this.fragments.culler.viewUpdated.on(() =>
+    setTimeout(() => this.renderer.postproduction.update(), 300)
+  );
   };
 
+  // private cameraRotation = () => {
+  //   setTimeout(() => {
+  //     console.log("CAMERA IS NOT ROTATING")
+  //     this.cameraIsRotating = false;
+  //   }, 1000);
+    
+  // };
+
   private preselect = () => {
+    if(this.cameraIsRotating) return;
     this.fragments.highlighter.highlight("preselection");
   };
 
-  private select = () => {
-    const result = this.fragments.highlighter.highlight("selection");
-    // console.log(result)
+  private select = (event: KeyboardEvent) => {
+    // console.log("SELECCTION! Camera is rotating?", this.cameraIsRotating)
+    if(this.cameraIsRotating) return;
+
+    // Single select or multiple?
+    this.hlSettings.singleSelect = !event.ctrlKey;
+
+    const result = this.fragments.highlighter.highlight("selection", this.hlSettings.singleSelect);
     if (result) {
+      console.log(result)
+
       // TODO
       // Disable selection when turning camera OR 
       // only get properties when checking properties, not with every select (selecting and clicking on menu "Properties")
@@ -268,6 +339,31 @@ export class BuildingScene {
     }
   };
 
+  private getIntersection = (event: KeyboardEvent) => {
+    if (event.code === "KeyI") {
+      const firstE = "";
+      const secondE = "";
+    
+      // const props = this.fragments.properties.get("9304F8A1-1962-4481-AA2A-5655ADEA8082i", "22620", true);
+      // console.log(props)
+      // console.log(this.fragments.groups.setVisibility("category", "IFCSLAB", false))
+      console.log(this.fragments.groups.groupSystems)
+      console.log(this.fragments.meshes)
+      // console.log(this.fragments.tree.generate())
+      // console.log(this.fragments.tree)
+      // console.log(this.components.tools.tools)
+      
+    }
+  };
+
+  private highlightAllWindows = (event: KeyboardEvent) => {
+    if (event.code === "KeyW") {
+      const windows = this.fragments.groups.groupSystems.category["IFCWINDOW"];
+      console.log(windows)
+      this.fragments.highlighter.highlightByID("red", windows, true);
+    }
+  };
+
   private createDimension = (event: KeyboardEvent) => {
     if (event.code === "KeyD") {
       const dims = this.getDimensions();
@@ -367,7 +463,7 @@ export class BuildingScene {
     files.push(
       new File(
         [JSON.stringify(model.coordinationMatrix)],
-        "coordination-matrix.json"
+        " .json"
       )
     );
     files.push(
@@ -403,6 +499,8 @@ export class BuildingScene {
       const modelTypes = await entries["model-types.json"].json();
       const levelsProperties = await entries["levels-properties.json"].json();
       const levelsRelationship = await entries["levels-relationship.json"].json();
+      const fragmentMap = await entries['express-fragment-map.json'].json();
+      const coordinationMatrix = await entries['coordination-matrix.json'].json();
 
       // Set up floorplans
 
@@ -454,10 +552,18 @@ export class BuildingScene {
         // TAKES TOO LONG!
         // const psetPropertyList = this._props.getElementProperties(properties);
         // const newProps = this._props.getFramentProperties(properties, psetPropertyList, fragment);
-        // console.log(newProps)
+        // console.log(fragment)
+
+        // Assign properties (to variable and to fragments)
         this.properties[fragment.id] = properties;
+        this.fragments.properties.properties[fragment.id] = properties;
+
+        // Generate Spatial tree
+        // this.fragments.tree.generate(fragment.id)
+
         // console.log(fragment.id, Object.keys(properties).length) //--> Always all properties are appended to each fragment property list (to relate it to one model) --> Can be improved!
         // this.properties[fragment.id] = this._props.groupPropertiesByType(properties); //--> Takes way too long!
+
 
         // Set up edges
         const lines = this.fragments.edges.generate(fragment);

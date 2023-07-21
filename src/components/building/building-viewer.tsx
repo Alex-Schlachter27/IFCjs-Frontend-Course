@@ -17,40 +17,69 @@ export const BuildingViewer: FC = () => {
   const [frontOpen, setFrontOpen] = useState(false);
   const [frontMenuMode, setFrontMenuMode] = useState<FrontMenuMode>("BuildingInfo");
 
-  let [{ building, user }, dispatch] = useAppContext();
-  const queryParameters = new URLSearchParams(window.location.search)
-  const buildingId = queryParameters.get("id")
-  console.log(buildingId)
+  const [state, dispatch] = useAppContext();
 
-  // Get building from url! --> get from Firebase!
-  useEffect(() => {
-    if (!building) {
-      console.log("no building", building)
-      // try to get building from local storage 
-      building = getLocalStorageBuilding(); 
-      console.log(building)
-      // trigger on component mount
-      dispatch({ type: "OPEN_BUILDING", payload: building });
-    }
-    //only gets executed when building changes
-  }, [building]);
+  let building = state.building;
+  let user = state.user;
 
-  
-  
-  console.log(building)
-
-  // This is executed before useEffect is executed. --> Then goes back to building through the map viewer, where the building is received from the state
-  // Need to start the building viewer now!
-  if(!building) return <Navigate to="/map" />;
-    
-
+  // LOGIN if no user is defined!
   if (!user) {
-    console.log("no user", user)
+    // console.log("no user", user)
     // try to get user from local storage 
     user = getLocalStorageUser();
     // console.log(user)
     if(!user) return <Navigate to="/login" />;
   }
+
+  // Cannot get from local storage as you otherwise cannot move to the map again (Close building only closes the building and rerenders the building viewer --> if !building, the map opens)
+  // building = getLocalStorageBuilding(); 
+  // console.log(building)
+  
+  const queryParameters = new URLSearchParams(window.location.search)
+  const buildingId = queryParameters.get("id")
+  // console.log(buildingId)
+
+  // Get building from url! --> get from Firebse!
+  // Not working to get the building with await a dispatch function to get the building from firestore
+  // Would be possible to get the 
+
+
+  // useEffect(() => {
+  //   // Get building from params
+  //   dispatch({ type: "GET_BUILDING", payload: buildingId });
+      
+  //   //only gets executed when building changes
+  // }, [building]);
+
+  // Update building
+  // console.log(useAppContext())
+  // building = useAppContext()[0].building;
+  // console.log(building)
+
+  // Is executed after it is already gone throught the map
+  // useEffect(() => {
+  //   if (!building) {
+  //     console.log("no building", building)
+  //     // try to get building from local storage 
+  //     building = getLocalStorageBuilding(); 
+  //     console.log(building)
+  //     // trigger on component mount
+  //     dispatch({ type: "OPEN_BUILDING", payload: building });
+  //   }
+  //   //only gets executed when building changes
+  // }, [building]);
+
+  
+  // This is executed before useEffect is executed. --> Then goes back to building through the map viewer, where the building is received from the state
+  // Need to start the building viewer now!
+  // if(!building) return <Navigate to="/map" />;
+
+  // if(!building) return <Navigate to="/map" />;
+  if(!building) {
+    console.log("RETURN TO MAP! No building found")
+    return <Navigate to="/map" />;
+  }
+
 
   const toggleFrontMenu = (active = !frontOpen, mode?: FrontMenuMode) => {
     if (mode) {
@@ -91,7 +120,10 @@ export const BuildingViewer: FC = () => {
           mode={frontMenuMode}
         />
 
-        <BuildingViewport />
+        <BuildingViewport/>
+        {/* <BuildingViewport
+          buildingFromLocalStorage={building}
+        /> */}
 
         
         <BuildingBottomMenu />

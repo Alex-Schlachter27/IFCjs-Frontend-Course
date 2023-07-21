@@ -9,6 +9,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getFirestore,
   updateDoc,
 } from "firebase/firestore";
@@ -50,6 +51,14 @@ export const databaseHandler = {
     await updateDoc(doc(dbInstance, "buildings", building.uid), {
       ...building,
     });
+  },
+
+  getBuilding: async (buildingId: string) => {
+    const dbInstance = getFirestore(getApp());
+    const docRef = doc(dbInstance, "buildings", buildingId)
+    const docSnap = await getDoc(docRef);
+    const data = docSnap.data()
+    return data
   },
 
   uploadModel: async (
